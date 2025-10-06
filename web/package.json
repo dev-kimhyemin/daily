@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "node node_modules/react-scripts/bin/react-scripts.js build"
   },
   "dependencies": {
     "moment": "^2.30.1",
