@@ -12,8 +12,8 @@ const COLORS = {
   line: "#E6E9F2",
   text: "#1F2937",
   sub: "#6B7280",
-  primary: "#60A5FA",
-  eventBg: "#E5F0FF",
+  primary: "#2563EB", // 어두운 남색 계열 (이벤트용)
+  eventBg: "#E0E7FF", // 파스텔 남색 배경
 };
 
 function App() {
@@ -31,8 +31,8 @@ function App() {
       .catch((err) => console.error("참가자 데이터 호출 실패", err));
   }, []);
 
-  // 참가자 선택 → 이미지 데이터 불러오기
-  const handleParticipantClick = (name) => {
+  // 참가자 클릭 → 이미지 불러오기
+  const loadParticipantData = (name) => {
     setActiveParticipant(name);
     fetch(`${API_BASE}/api/participants/${encodeURIComponent(name)}/images`)
       .then((res) => res.json())
@@ -60,7 +60,6 @@ function App() {
       .catch((err) => console.error("이미지 데이터 불러오기 실패", err));
   };
 
-  // 이벤트 클릭 시 이미지 모달 열기
   const handleEventClick = (event) => {
     setSelectedEventImages(event.images || []);
     setModalOpen(true);
@@ -71,7 +70,7 @@ function App() {
     setSelectedEventImages([]);
   };
 
-  // 캘린더 툴바
+  // 커스텀 툴바
   const Toolbar = (toolbar) => {
     const label = moment(toolbar.date).format("YYYY. MM");
     return (
@@ -91,6 +90,7 @@ function App() {
     );
   };
 
+  // 이벤트 칩
   const EventChip = ({ event }) => {
     const count = event.images?.length || 0;
     return (
@@ -117,6 +117,7 @@ function App() {
 
   return (
     <div className="app">
+      {/* 좌측 패널 */}
       <aside className="sidebar">
         <div className="summary">
           <div className="label">기간 합계</div>
@@ -124,24 +125,45 @@ function App() {
           <div className="desc">이벤트를 클릭하면 인증 이미지를 확인할 수 있어요.</div>
         </div>
 
-        <div className="list">
+        {/* 데스크톱용 버튼 리스트 */}
+        <div className="list desktop-only">
           <div className="list-title">참가자</div>
           {participants.map((name) => {
             const active = name === activeParticipant;
             return (
               <button
                 key={name}
-                onClick={() => handleParticipantClick(name)}
+                onClick={() => loadParticipantData(name)}
                 className={`participant ${active ? "active" : ""}`}
               >
                 <span>{name}</span>
-                <span className="load">{active ? "활동중" : "불러오기"}</span>
+                <span className="load">{active ? "선택됨" : "불러오기"}</span>
               </button>
             );
           })}
         </div>
+
+        {/* 모바일용 드롭다운 */}
+        <div className="mobile-only">
+          <label className="mobile-label">참가자 선택</label>
+          <select
+            value={activeParticipant || ""}
+            onChange={(e) => loadParticipantData(e.target.value)}
+            className="mobile-select"
+          >
+            <option value="" disabled>
+              참가자 선택
+            </option>
+            {participants.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
       </aside>
 
+      {/* 캘린더 */}
       <main className="main">
         <div style={calendarStyles.style}>
           <Calendar
@@ -160,6 +182,7 @@ function App() {
         </div>
       </main>
 
+      {/* 모달 */}
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -209,7 +232,6 @@ function App() {
           flex-direction: column;
           gap: 8px;
         }
-
         .list-title { font-size: 13px; color: ${COLORS.sub}; padding: 4px 8px 8px; }
 
         .participant {
@@ -223,19 +245,37 @@ function App() {
           color: ${COLORS.text};
           font-size: 14px;
         }
-
         .participant.active {
           background: #eff6ff;
           border-color: ${COLORS.primary};
         }
-
         .participant .load {
           font-size: 12px;
           color: ${COLORS.sub};
         }
-
         .participant.active .load {
           color: ${COLORS.primary};
+        }
+
+        /* 모바일 전용 */
+        .mobile-only {
+          display: none;
+          flex-direction: column;
+          gap: 6px;
+          padding: 10px;
+          background: ${COLORS.card};
+          border-radius: 12px;
+          border: 1px solid ${COLORS.line};
+        }
+        .mobile-label {
+          font-size: 13px;
+          color: ${COLORS.sub};
+        }
+        .mobile-select {
+          padding: 8px;
+          border-radius: 8px;
+          border: 1px solid ${COLORS.line};
+          font-size: 14px;
         }
 
         .main {
@@ -244,111 +284,37 @@ function App() {
           overflow: hidden;
         }
 
-        .toolbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 12px 16px;
-          border-bottom: 1px solid ${COLORS.line};
-          background: ${COLORS.card};
-        }
-
-        .toolbar-left { display: flex; gap: 8px; align-items: baseline; }
-        .toolbar-title { font-size: 20px; font-weight: 700; color: ${COLORS.text}; }
-        .toolbar-sub { font-size: 12px; color: ${COLORS.sub}; }
-
-        .toolbar-right button {
-          height: 32px;
-          padding: 0 12px;
-          border-radius: 10px;
-          border: 1px solid ${COLORS.line};
-          background: #f8faff;
-          color: ${COLORS.text};
-          cursor: pointer;
-        }
-
         .event-chip {
           display: flex;
           align-items: center;
           gap: 6px;
-          background: ${COLORS.eventBg};
+          background: ${COLORS.primary};
+          color: white;
           border-radius: 10px;
-          border: 1px solid ${COLORS.line};
-          padding: 4px 8px;
+          border: none;
+          padding: 5px 8px;
           font-size: 12px;
+          font-weight: 600;
         }
 
-        .event-chip .dot {
+        .dot {
           width: 8px;
           height: 8px;
           border-radius: 999px;
-          background: ${COLORS.primary};
+          background: white;
         }
 
-        .event-chip .count {
-          margin-left: auto;
-          background: ${COLORS.card};
-          border: 1px solid ${COLORS.line};
-          border-radius: 999px;
-          padding: 2px 6px;
-          font-size: 11px;
-          color: ${COLORS.sub};
-        }
-
-        .modal-backdrop {
-          position: fixed;
-          inset: 0;
-          background: rgba(17, 24, 39, 0.6);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-          padding: 8px;
-        }
-
-        .modal {
-          background: ${COLORS.card};
-          border-radius: 12px;
-          padding: 8px;
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 8px;
-          max-width: 95vw;
-          max-height: 80vh;
-          overflow-y: auto;
-        }
-
-        .modal img {
-          max-width: 320px;
-          width: 100%;
-          border-radius: 8px;
-          border: 1px solid ${COLORS.line};
-        }
-
-        /* ✅ 반응형 */
-        @media (max-width: 1024px) {
-          .sidebar { width: 220px; }
-        }
-
+        /* 반응형 */
         @media (max-width: 768px) {
-          .app { flex-direction: column; }
+          .desktop-only { display: none; }
+          .mobile-only { display: flex; }
           .sidebar {
             width: 100%;
-            flex-direction: row;
-            overflow-x: auto;
+            flex-direction: column;
             border-right: none;
             border-bottom: 1px solid ${COLORS.line};
           }
-          .list { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; }
           .main { padding: 8px; }
-        }
-
-        @media (max-width: 480px) {
-          .toolbar { flex-direction: column; gap: 8px; }
-          .event-chip { font-size: 10px; }
-          .participant { font-size: 13px; padding: 8px; }
-          .summary .value { font-size: 18px; }
         }
       `}</style>
     </div>
