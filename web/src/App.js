@@ -5,7 +5,8 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// ✅ URL 끝 슬래시 제거 (무조건 /api 앞에 하나만 붙게)
+const API_BASE = (process.env.REACT_APP_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 // 팔레트 (파스텔)
 const COLORS = {
