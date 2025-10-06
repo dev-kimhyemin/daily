@@ -12,8 +12,8 @@ const COLORS = {
   line: "#E6E9F2",
   text: "#1F2937",
   sub: "#6B7280",
-  primary: "#2563EB", // 어두운 남색 계열
-  eventBg: "#E0E7FF", // 파스텔 남색 배경
+  primary: "#2563EB",
+  eventBg: "#E0E7FF",
 };
 
 function App() {
@@ -23,7 +23,6 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeParticipant, setActiveParticipant] = useState("");
 
-  // 참가자 목록 불러오기
   useEffect(() => {
     fetch(`${API_BASE}/api/participants`)
       .then((res) => res.json())
@@ -31,7 +30,6 @@ function App() {
       .catch((err) => console.error("참가자 데이터 호출 실패", err));
   }, []);
 
-  // 참가자 클릭 → 이미지 불러오기
   const loadParticipantData = (name) => {
     setActiveParticipant(name);
     fetch(`${API_BASE}/api/participants/${encodeURIComponent(name)}/images`)
@@ -70,7 +68,6 @@ function App() {
     setSelectedEventImages([]);
   };
 
-  // 커스텀 툴바
   const Toolbar = (toolbar) => {
     const label = moment(toolbar.date).format("YYYY. MM");
     return (
@@ -90,7 +87,6 @@ function App() {
     );
   };
 
-  // 이벤트 칩
   const EventChip = ({ event }) => {
     const count = event.images?.length || 0;
     return (
@@ -117,7 +113,7 @@ function App() {
 
   return (
     <div className="app">
-      {/* 좌측 패널 */}
+      {/* ===== 사이드바 ===== */}
       <aside className="sidebar">
         <div className="summary">
           <div className="label">기간 합계</div>
@@ -125,7 +121,7 @@ function App() {
           <div className="desc">이벤트를 클릭하면 인증 이미지를 확인할 수 있어요.</div>
         </div>
 
-        {/* 데스크톱용 버튼 리스트 */}
+        {/* 데스크톱 참가자 리스트 */}
         <div className="list desktop-only">
           <div className="list-title">참가자</div>
           {participants.map((name) => {
@@ -143,7 +139,7 @@ function App() {
           })}
         </div>
 
-        {/* 모바일용 드롭다운 */}
+        {/* 모바일 드롭다운 */}
         <div className="mobile-only">
           <label className="mobile-label">참가자 선택</label>
           <select
@@ -163,7 +159,7 @@ function App() {
         </div>
       </aside>
 
-      {/* 캘린더 */}
+      {/* ===== 메인 (캘린더) ===== */}
       <main className="main">
         <div style={calendarStyles.style}>
           <Calendar
@@ -182,7 +178,7 @@ function App() {
         </div>
       </main>
 
-      {/* 모달 */}
+      {/* ===== 팝업 모달 ===== */}
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -205,12 +201,20 @@ function App() {
 
         .sidebar {
           width: 280px;
+          min-width: 240px;
           padding: 16px;
           display: flex;
           flex-direction: column;
           gap: 12px;
           border-right: 1px solid ${COLORS.line};
           background: ${COLORS.bg};
+        }
+
+        .main {
+          flex: 1; /* ✅ 캘린더 더 넓게 */
+          padding: 24px;
+          overflow: hidden;
+          min-width: 0;
         }
 
         .summary {
@@ -257,7 +261,6 @@ function App() {
           color: ${COLORS.primary};
         }
 
-        /* Toolbar */
         .toolbar {
           display: flex;
           align-items: center;
@@ -268,6 +271,7 @@ function App() {
           border-top-left-radius: 16px;
           border-top-right-radius: 16px;
         }
+
         .toolbar-left {
           display: flex;
           align-items: baseline;
@@ -313,25 +317,52 @@ function App() {
           background: white;
         }
 
-        /* 반응형 */
+        /* ===== 모달 팝업 ===== */
+        .modal-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.55);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
+        .modal {
+          background: ${COLORS.card};
+          border-radius: 16px;
+          border: 1px solid ${COLORS.line};
+          padding: 16px;
+          display: flex;
+          gap: 8px;
+          max-width: 90vw;
+          max-height: 70vh;
+          overflow-x: auto;
+        }
+        .modal img {
+          max-height: 60vh;
+          height: auto;
+          width: auto;
+          object-fit: contain;
+          border-radius: 12px;
+          border: 1px solid ${COLORS.line};
+        }
+
+        /* ===== 반응형 ===== */
         @media (max-width: 768px) {
           .app { flex-direction: column; }
           .sidebar {
             width: 100%;
-            flex-direction: column;
             border-right: none;
             border-bottom: 1px solid ${COLORS.line};
           }
-          .main {
-            flex: 1;
-            width: 100%;
-            padding: 8px;
-            height: auto;
-          }
+          .main { padding: 8px; }
           .rbc-calendar { height: 70vh !important; }
-          .desktop-only { display: none; }
+          .desktop-only { display: none !important; }
           .mobile-only {
-            display: flex;
+            display: flex !important;
             flex-direction: column;
             gap: 6px;
             padding: 10px;
