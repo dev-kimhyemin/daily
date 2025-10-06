@@ -12,7 +12,7 @@ const COLORS = {
   line: "#E6E9F2",
   text: "#1F2937",
   sub: "#6B7280",
-  primary: "#2563EB", // 어두운 남색 계열 (이벤트용)
+  primary: "#2563EB", // 어두운 남색 계열
   eventBg: "#E0E7FF", // 파스텔 남색 배경
 };
 
@@ -82,9 +82,9 @@ function App() {
           </span>
         </div>
         <div className="toolbar-right">
-          <button onClick={() => toolbar.onNavigate("PREV")}>이전</button>
-          <button onClick={() => toolbar.onNavigate("TODAY")}>오늘</button>
-          <button onClick={() => toolbar.onNavigate("NEXT")}>다음</button>
+          <button className="nav-btn" onClick={() => toolbar.onNavigate("PREV")}>이전</button>
+          <button className="nav-btn" onClick={() => toolbar.onNavigate("TODAY")}>오늘</button>
+          <button className="nav-btn" onClick={() => toolbar.onNavigate("NEXT")}>다음</button>
         </div>
       </div>
     );
@@ -257,31 +257,41 @@ function App() {
           color: ${COLORS.primary};
         }
 
-        /* 모바일 전용 */
-        .mobile-only {
-          display: none;
-          flex-direction: column;
-          gap: 6px;
-          padding: 10px;
+        /* Toolbar */
+        .toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          border-bottom: 1px solid ${COLORS.line};
           background: ${COLORS.card};
-          border-radius: 12px;
-          border: 1px solid ${COLORS.line};
+          border-top-left-radius: 16px;
+          border-top-right-radius: 16px;
         }
-        .mobile-label {
-          font-size: 13px;
-          color: ${COLORS.sub};
+        .toolbar-left {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
         }
-        .mobile-select {
-          padding: 8px;
+        .toolbar-title { font-size: 20px; font-weight: 700; color: ${COLORS.text}; }
+        .toolbar-sub { font-size: 12px; color: ${COLORS.sub}; }
+        .toolbar-right { display: flex; gap: 8px; }
+
+        .nav-btn {
+          height: 34px;
+          padding: 0 12px;
           border-radius: 8px;
           border: 1px solid ${COLORS.line};
-          font-size: 14px;
+          background: #f0f4ff;
+          color: ${COLORS.text};
+          font-size: 13px;
+          cursor: pointer;
+          transition: all 0.15s ease;
         }
-
-        .main {
-          flex: 1;
-          padding: 16px;
-          overflow: hidden;
+        .nav-btn:hover {
+          background: ${COLORS.primary};
+          color: white;
+          border-color: ${COLORS.primary};
         }
 
         .event-chip {
@@ -291,7 +301,6 @@ function App() {
           background: ${COLORS.primary};
           color: white;
           border-radius: 10px;
-          border: none;
           padding: 5px 8px;
           font-size: 12px;
           font-weight: 600;
@@ -306,15 +315,30 @@ function App() {
 
         /* 반응형 */
         @media (max-width: 768px) {
-          .desktop-only { display: none; }
-          .mobile-only { display: flex; }
+          .app { flex-direction: column; }
           .sidebar {
             width: 100%;
             flex-direction: column;
             border-right: none;
             border-bottom: 1px solid ${COLORS.line};
           }
-          .main { padding: 8px; }
+          .main {
+            flex: 1;
+            width: 100%;
+            padding: 8px;
+            height: auto;
+          }
+          .rbc-calendar { height: 70vh !important; }
+          .desktop-only { display: none; }
+          .mobile-only {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px;
+            background: ${COLORS.card};
+            border-radius: 12px;
+            border: 1px solid ${COLORS.line};
+          }
         }
       `}</style>
     </div>
