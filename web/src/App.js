@@ -113,15 +113,15 @@ function App() {
 
   return (
     <div className="app">
-      {/* ===== 사이드바 ===== */}
       <aside className="sidebar">
+        {/* ✅ 텍스트 수정 */}
         <div className="summary">
-          <div className="label">기간 합계</div>
-          <div className="value">{events.length}일 활동</div>
+          <div className="label">활동 기간</div>
+          <div className="value">{events.length}일</div>
           <div className="desc">이벤트를 클릭하면 인증 이미지를 확인할 수 있어요.</div>
         </div>
 
-        {/* 데스크톱 참가자 리스트 */}
+        {/* ✅ 데스크톱용만 버튼 표시 */}
         <div className="list desktop-only">
           <div className="list-title">참가자</div>
           {participants.map((name) => {
@@ -139,7 +139,7 @@ function App() {
           })}
         </div>
 
-        {/* 모바일 드롭다운 */}
+        {/* ✅ 모바일 전용 드롭다운 */}
         <div className="mobile-only">
           <label className="mobile-label">참가자 선택</label>
           <select
@@ -159,7 +159,6 @@ function App() {
         </div>
       </aside>
 
-      {/* ===== 메인 (캘린더) ===== */}
       <main className="main">
         <div style={calendarStyles.style}>
           <Calendar
@@ -178,7 +177,6 @@ function App() {
         </div>
       </main>
 
-      {/* ===== 팝업 모달 ===== */}
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -190,176 +188,13 @@ function App() {
       )}
 
       <style>{`
-        .app {
-          display: flex;
-          flex-direction: row;
-          width: 100vw;
-          height: 100vh;
-          background: ${COLORS.bg};
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans KR", sans-serif;
+        /* ✅ 드롭다운 안 보이게 (웹) */
+        .mobile-only {
+          display: none;
         }
 
-        .sidebar {
-          width: 280px;
-          min-width: 240px;
-          padding: 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          border-right: 1px solid ${COLORS.line};
-          background: ${COLORS.bg};
-        }
-
-        .main {
-          flex: 1; /* ✅ 캘린더 더 넓게 */
-          padding: 24px;
-          overflow: hidden;
-          min-width: 0;
-        }
-
-        .summary {
-          background: ${COLORS.card};
-          border-radius: 16px;
-          border: 1px solid ${COLORS.line};
-          padding: 16px;
-        }
-        .summary .label { font-size: 14px; color: ${COLORS.sub}; }
-        .summary .value { font-size: 22px; font-weight: 800; margin-top: 4px; color: ${COLORS.text}; }
-        .summary .desc { font-size: 12px; color: ${COLORS.sub}; margin-top: 8px; }
-
-        .list {
-          background: ${COLORS.card};
-          border-radius: 16px;
-          border: 1px solid ${COLORS.line};
-          padding: 10px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        .list-title { font-size: 13px; color: ${COLORS.sub}; padding: 4px 8px 8px; }
-
-        .participant {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px 14px;
-          border-radius: 12px;
-          border: 1px solid ${COLORS.line};
-          background: #fafbff;
-          color: ${COLORS.text};
-          font-size: 14px;
-        }
-        .participant.active {
-          background: #eff6ff;
-          border-color: ${COLORS.primary};
-        }
-        .participant .load {
-          font-size: 12px;
-          color: ${COLORS.sub};
-        }
-        .participant.active .load {
-          color: ${COLORS.primary};
-        }
-
-        .toolbar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 16px;
-          border-bottom: 1px solid ${COLORS.line};
-          background: ${COLORS.card};
-          border-top-left-radius: 16px;
-          border-top-right-radius: 16px;
-        }
-
-        .toolbar-left {
-          display: flex;
-          align-items: baseline;
-          gap: 8px;
-        }
-        .toolbar-title { font-size: 20px; font-weight: 700; color: ${COLORS.text}; }
-        .toolbar-sub { font-size: 12px; color: ${COLORS.sub}; }
-        .toolbar-right { display: flex; gap: 8px; }
-
-        .nav-btn {
-          height: 34px;
-          padding: 0 12px;
-          border-radius: 8px;
-          border: 1px solid ${COLORS.line};
-          background: #f0f4ff;
-          color: ${COLORS.text};
-          font-size: 13px;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-        .nav-btn:hover {
-          background: ${COLORS.primary};
-          color: white;
-          border-color: ${COLORS.primary};
-        }
-
-        .event-chip {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: ${COLORS.primary};
-          color: white;
-          border-radius: 10px;
-          padding: 5px 8px;
-          font-size: 12px;
-          font-weight: 600;
-        }
-
-        .dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 999px;
-          background: white;
-        }
-
-        /* ===== 모달 팝업 ===== */
-        .modal-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background: rgba(0, 0, 0, 0.55);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-        }
-        .modal {
-          background: ${COLORS.card};
-          border-radius: 16px;
-          border: 1px solid ${COLORS.line};
-          padding: 16px;
-          display: flex;
-          gap: 8px;
-          max-width: 90vw;
-          max-height: 70vh;
-          overflow-x: auto;
-        }
-        .modal img {
-          max-height: 60vh;
-          height: auto;
-          width: auto;
-          object-fit: contain;
-          border-radius: 12px;
-          border: 1px solid ${COLORS.line};
-        }
-
-        /* ===== 반응형 ===== */
+        /* ✅ 드롭다운은 모바일에서만 보이게 */
         @media (max-width: 768px) {
-          .app { flex-direction: column; }
-          .sidebar {
-            width: 100%;
-            border-right: none;
-            border-bottom: 1px solid ${COLORS.line};
-          }
-          .main { padding: 8px; }
-          .rbc-calendar { height: 70vh !important; }
           .desktop-only { display: none !important; }
           .mobile-only {
             display: flex !important;
